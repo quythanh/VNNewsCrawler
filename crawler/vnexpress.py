@@ -31,9 +31,9 @@ class VNExpressCrawler(BaseCrawler):
             8: "giao-duc",
             9: "suc-khoe",
             10: "doi-song"
-        }   
+        }
 
-    def extract_content(self, url: str) -> tuple:
+    def extract_content(self, url: str) -> tuple[str, tuple[str], tuple[str]]:
         """
         Extract title, description and paragraphs from url
         @param url (str): url to crawl
@@ -41,7 +41,10 @@ class VNExpressCrawler(BaseCrawler):
         @return description (generator)
         @return paragraphs (generator)
         """
-        content = requests.get(url).content
+        try:
+            content = requests.get(url).content
+        except Exception:
+            return None, None, None
         soup = BeautifulSoup(content, "html.parser")
 
         title = soup.find("h1", class_="title-detail") 
@@ -55,27 +58,6 @@ class VNExpressCrawler(BaseCrawler):
 
         return title, description, paragraphs
 
-    def write_content(self, url: str, output_fpath: str) -> bool:
-        """
-        From url, extract title, description and paragraphs then write in output_fpath
-        @param url (str): url to crawl
-        @param output_fpath (str): file path to save crawled result
-        @return (bool): True if crawl successfully and otherwise
-        """
-        title, description, paragraphs = self.extract_content(url)
-
-        if title is None:
-            return False
-
-        with open(output_fpath, "w", encoding="utf-8") as file:
-            file.write(title + "\n")
-            for p in description:
-                file.write(p + "\n")
-            for p in paragraphs:
-                file.write(p + "\n")
-
-        return True
-
     def get_urls_of_type_thread(self, article_type, page_number):
         """" Get urls of articles in a specific type in a page"""
         page_url = f"https://vnexpress.net/{article_type}-p{page_number}"
@@ -84,6 +66,31 @@ class VNExpressCrawler(BaseCrawler):
         titles = soup.find_all(class_="title-news")
 
         if (len(titles) == 0):
+            self.logger.info(f"Couldn't find any news in {page_url} \nMaybe you sent too many requests, try using less workers")
+
+        articles_urls = list()
+
+        for title in titles:
+            link = title.find_all("a")[0]
+            articles_urls.append(link.get("href"))
+
+        return articles_urls
+
+    def get_urls_of_search_thread(self, search_query, page_number):
+        """
+        Fetch URLs of articles for a given search query and page number.
+
+        @param search_query (str): The search query.
+        @param page_number (int): The page number to crawl.
+
+        @return articles_urls (list): List of article URLs from the search result page.
+        """
+        page_url = f"https://timkiem.vnexpress.net/?q={search_query}&media_type=text&fromdate=0&todate=0&latest=on&cate_code=&search_f=title,tag_list&date_format=all&page={page_number}"
+        content = requests.get(page_url).content
+        soup = BeautifulSoup(content, "html.parser")
+        titles = soup.find_all(class_="title-news")
+
+        if len(titles) == 0:
             self.logger.info(f"Couldn't find any news in {page_url} \nMaybe you sent too many requests, try using less workers")
 
         articles_urls = list()

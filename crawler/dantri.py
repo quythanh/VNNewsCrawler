@@ -35,8 +35,8 @@ class DanTriCrawler(BaseCrawler):
             11: "giao-duc",
             12: "an-sinh",
             13: "phap-luat"
-        }   
-        
+        }
+
     def extract_content(self, url: str) -> tuple:
         """
         Extract title, description and paragraphs from url
@@ -49,7 +49,7 @@ class DanTriCrawler(BaseCrawler):
         soup = BeautifulSoup(content, "html.parser")
 
         title = soup.find("h1", class_="title-page detail") 
-        if title == None:
+        if title is None:
             return None, None, None
         title = title.text
 
@@ -59,27 +59,6 @@ class DanTriCrawler(BaseCrawler):
 
         return title, description, paragraphs
 
-    def write_content(self, url: str, output_fpath: str) -> bool:
-        """
-        From url, extract title, description and paragraphs then write in output_fpath
-        @param url (str): url to crawl
-        @param output_fpath (str): file path to save crawled result
-        @return (bool): True if crawl successfully and otherwise
-        """
-        title, description, paragraphs = self.extract_content(url)
-                    
-        if title == None:
-            return False
-
-        with open(output_fpath, "w", encoding="utf-8") as file:
-            file.write(title + "\n")
-            for p in description:
-                file.write(p + "\n")
-            for p in paragraphs:                     
-                file.write(p + "\n")
-
-        return True
-    
     def get_urls_of_type_thread(self, article_type, page_number):
         """" Get urls of articles in a specific type in a page"""
         page_url = f"https://dantri.com.vn/{article_type}/trang-{page_number}.htm"
@@ -89,12 +68,14 @@ class DanTriCrawler(BaseCrawler):
 
         if (len(titles) == 0):
             self.logger.info(f"Couldn't find any news in {page_url} \nMaybe you sent too many requests, try using less workers")
-            
 
         articles_urls = list()
 
         for title in titles:
             link = title.find_all("a")[0]
             articles_urls.append(self.base_url + link.get("href"))
-    
+
         return articles_urls
+
+    def get_urls_of_search_thread(self, search_query, page_number) -> list:
+        return super().get_urls_of_search_thread(search_query, page_number)

@@ -35,8 +35,8 @@ class VietNamNetCrawler(BaseCrawler):
             11: "oto-xe-may",
             12: "bat-dong-san",
             13: "du-lich",
-        }   
-        
+        }
+
     def extract_content(self, url: str) -> tuple:
         """
         Extract title, description and paragraphs from url
@@ -54,34 +54,13 @@ class VietNamNetCrawler(BaseCrawler):
 
         if [var for var in (title_tag, desc_tag, p_tag) if var is None]:
             return None, None, None
-        
+
         title = title_tag.text
         description = (get_text_from_tag(p) for p in desc_tag.contents)
         paragraphs = (get_text_from_tag(p) for p in p_tag.find_all("p"))
 
         return title, description, paragraphs
 
-    def write_content(self, url: str, output_fpath: str) -> bool:
-        """
-        From url, extract title, description and paragraphs then write in output_fpath
-        @param url (str): url to crawl
-        @param output_fpath (str): file path to save crawled result
-        @return (bool): True if crawl successfully and otherwise
-        """
-        title, description, paragraphs = self.extract_content(url)
-                    
-        if title == None:
-            return False
-
-        with open(output_fpath, "w", encoding="utf-8") as file:
-            file.write(title + "\n")
-            for p in description:
-                file.write(p + "\n")
-            for p in paragraphs:                     
-                file.write(p + "\n")
-
-        return True
-    
     def get_urls_of_type_thread(self, article_type, page_number):
         """" Get urls of articles in a specific type in a page"""
         page_url = f"https://vietnamnet.vn/{article_type}-page{page_number}"
@@ -91,7 +70,7 @@ class VietNamNetCrawler(BaseCrawler):
 
         if (len(titles) == 0):
             self.logger.info(f"Couldn't find any news in {page_url} \nMaybe you sent too many requests, try using less workers")
-            
+
         articles_urls = list()
 
         for title in titles:
@@ -99,5 +78,8 @@ class VietNamNetCrawler(BaseCrawler):
             if self.base_url not in full_url:
                 full_url = self.base_url + full_url
             articles_urls.append(full_url)
-    
+
         return articles_urls
+
+    def get_urls_of_search_thread(self, search_query, page_number) -> list:
+        return super().get_urls_of_search_thread(search_query, page_number)
