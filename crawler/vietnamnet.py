@@ -4,14 +4,14 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 
+from .base_crawler import BaseCrawler
+from ..logger import log
+from ..utils.bs4_utils import get_text_from_tag
+
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[1]  # root directory
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
-
-from logger import log
-from crawler.base_crawler import BaseCrawler
-from utils.bs4_utils import get_text_from_tag
 
 
 class VietNamNetCrawler(BaseCrawler):

@@ -4,14 +4,14 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 
+from .base_crawler import BaseCrawler
+from ..logger import log
+from ..utils.bs4_utils import get_text_from_tag
+
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[1]  # root directory
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
-
-from logger import log
-from crawler.base_crawler import BaseCrawler
-from utils.bs4_utils import get_text_from_tag
 
 
 class VNExpressCrawler(BaseCrawler):
@@ -45,7 +45,7 @@ class VNExpressCrawler(BaseCrawler):
         soup = BeautifulSoup(content, "html.parser")
 
         title = soup.find("h1", class_="title-detail") 
-        if title == None:
+        if title is None:
             return None, None, None
         title = title.text
 
@@ -63,15 +63,15 @@ class VNExpressCrawler(BaseCrawler):
         @return (bool): True if crawl successfully and otherwise
         """
         title, description, paragraphs = self.extract_content(url)
-                    
-        if title == None:
+
+        if title is None:
             return False
 
         with open(output_fpath, "w", encoding="utf-8") as file:
             file.write(title + "\n")
             for p in description:
                 file.write(p + "\n")
-            for p in paragraphs:                     
+            for p in paragraphs:
                 file.write(p + "\n")
 
         return True
@@ -91,5 +91,5 @@ class VNExpressCrawler(BaseCrawler):
         for title in titles:
             link = title.find_all("a")[0]
             articles_urls.append(link.get("href"))
-    
+
         return articles_urls

@@ -1,6 +1,4 @@
-import requests
-
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import NavigableString
 
 
 def get_text_from_tag(tag):
