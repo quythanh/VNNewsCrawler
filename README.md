@@ -20,10 +20,11 @@ pip install -r requirements.txt
 ```
 
 ## 👨‍💻 Usage
-Modifying your crawler configuration file (default is `crawler_config.yml`) to customize your crawling progress.
+
+Modifying your crawler configuration file (default is `config.yml`) to customize your crawling progress.
 
 ```yml
-# crawler_config.yml
+# config.yml
 
 # Name of news website that want to crawls (vnexpress, dantri, vietnamnet)
 webname: "vnexpress"
@@ -45,7 +46,7 @@ total_pages: 1
 
 Then simply run:
 ```
-python VNNewsCrawler.py --config crawler_config.yml
+python VNNewsCrawler.py --config config.yml
 ```
 ### Crawl by URL
 To perform URL-based crawling, you need to configure the file by setting `task: "url"`. The program will proceed to crawl each URL specified in the `urls_fpath` file. By default, the program is equipped with two VNExpress news URLs included in the `urls.txt` file.

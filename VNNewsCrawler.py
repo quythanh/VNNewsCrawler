@@ -16,7 +16,7 @@ def main(config_fpath):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Vietnamese News crawler (with url/type)")
     parser.add_argument("--config", 
-                        default="crawler_config.yml", 
+                        default="config.yml", 
                         help="path to config file",
                         dest="config_fpath") 
     args = parser.parse_args()
