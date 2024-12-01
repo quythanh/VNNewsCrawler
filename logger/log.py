@@ -3,7 +3,7 @@ import logging
 import logging.config 
 from pathlib import Path
 
-from ..utils.utils import create_dir
+from utils.utils import create_dir
 
 
 def setup_logging(log_dir, config_fpath="logger_config.yml"):

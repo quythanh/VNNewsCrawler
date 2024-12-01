@@ -5,8 +5,8 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 from .base_crawler import BaseCrawler
-from ..logger import log
-from ..utils.bs4_utils import get_text_from_tag
+from logger import log
+from utils.bs4_utils import get_text_from_tag
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[1]  # root directory

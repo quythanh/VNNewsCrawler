@@ -3,7 +3,7 @@ import concurrent.futures
 
 from tqdm import tqdm
 
-from ..utils.utils import init_output_dirs, create_dir, read_file
+from utils.utils import init_output_dirs, create_dir, read_file
 
 class BaseCrawler(ABC):
 

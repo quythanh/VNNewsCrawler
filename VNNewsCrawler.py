@@ -1,8 +1,8 @@
 import argparse
 
-from .logger import log
-from .utils import utils
-from .crawler.factory import get_crawler
+from logger import log
+from utils import utils
+from crawler.factory import get_crawler
 
 
 def main(config_fpath):
