@@ -4,6 +4,8 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 
+from models import Article
+
 from .base_crawler import BaseCrawler
 from logger import log
 from utils.bs4_utils import get_text_from_tag
@@ -33,7 +35,7 @@ class VNExpressCrawler(BaseCrawler):
             10: "doi-song"
         }
 
-    def extract_content(self, url: str) -> tuple[str, tuple[str], tuple[str]]:
+    def extract_content(self, url: str) -> Article:
         """
         Extract title, description and paragraphs from url
         @param url (str): url to crawl
@@ -49,14 +51,34 @@ class VNExpressCrawler(BaseCrawler):
 
         title = soup.find("h1", class_="title-detail") 
         if title is None:
-            return None, None, None
+            return None
         title = title.text
 
         # some sport news have location-stamp child tag inside description tag
         description = (get_text_from_tag(p) for p in soup.find("p", class_="description").contents)
         paragraphs = (get_text_from_tag(p) for p in soup.find_all("p", class_="Normal"))
 
-        return title, description, paragraphs
+        figure_tag = soup.find("figure", class_="tplCaption")
+
+        if figure_tag is None:
+            print("fig is None")
+            return Article(title, description, paragraphs, url, None)
+
+        picture_tag = figure_tag.find("picture")
+
+        if picture_tag is None:
+            print("pic is None")
+            return Article(title, description, paragraphs, url, None)
+
+        img_tag = picture_tag.find("img")
+
+        if img_tag is None:
+            print("img is None")
+            return Article(title, description, paragraphs, url, None)
+
+        img = img_tag["data-src"]
+
+        return Article(title, description, paragraphs, url, img)
 
     def get_urls_of_type_thread(self, article_type, page_number):
         """" Get urls of articles in a specific type in a page"""

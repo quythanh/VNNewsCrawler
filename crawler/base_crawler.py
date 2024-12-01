@@ -4,11 +4,12 @@ import concurrent.futures
 from tqdm import tqdm
 
 from utils.utils import init_output_dirs, create_dir, read_file
+from models import Article
 
 class BaseCrawler(ABC):
 
     @abstractmethod
-    def extract_content(self, url) -> tuple[str, tuple[str], tuple[str]]:
+    def extract_content(self, url) -> Article:
         """
         Extract title, description and paragraphs from url
         @param url (str): url to crawl
@@ -26,19 +27,13 @@ class BaseCrawler(ABC):
         @return (bool): True if crawl successfully and otherwise
         """
 
-        title, description, paragraphs = self.extract_content(url)
+        article = self.extract_content(url)
 
-        if title is None:
+        if article is None:
             return False
 
         with open(output_fpath, "w", encoding="utf-8") as file:
-            file.write(url + "\n\n")
-            file.write(title + "\n\n")
-            for p in description:
-                file.write(p + "\n")
-            file.write("\n")
-            for p in paragraphs:
-                file.write(p + "\n")
+            file.write(str(article))
 
         return True
 

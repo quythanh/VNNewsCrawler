@@ -4,6 +4,8 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 
+from models import Article
+
 from .base_crawler import BaseCrawler
 from logger import log
 from utils.bs4_utils import get_text_from_tag
@@ -37,7 +39,7 @@ class DanTriCrawler(BaseCrawler):
             13: "phap-luat"
         }
 
-    def extract_content(self, url: str) -> tuple:
+    def extract_content(self, url: str) -> Article:
         """
         Extract title, description and paragraphs from url
         @param url (str): url to crawl
@@ -50,14 +52,16 @@ class DanTriCrawler(BaseCrawler):
 
         title = soup.find("h1", class_="title-page detail") 
         if title is None:
-            return None, None, None
+            return None
         title = title.text
 
         description = (get_text_from_tag(p) for p in soup.find("h2", class_="singular-sapo").contents)
         content = soup.find("div", class_="singular-content")
         paragraphs = (get_text_from_tag(p) for p in content.find_all("p"))
 
-        return title, description, paragraphs
+        article = Article(title, description, paragraphs, url, None)
+
+        return article
 
     def get_urls_of_type_thread(self, article_type, page_number):
         """" Get urls of articles in a specific type in a page"""
