@@ -1,12 +1,12 @@
 import argparse
 
 from logger import log
-from utils import utils
+from utils import get_config
 from crawler.factory import get_crawler
 
 
 def main(config_fpath):
-    config = utils.get_config(config_fpath)
+    config = get_config(config_fpath)
     log.setup_logging(log_dir=config["output_dpath"], 
                       config_fpath=config["logger_fpath"])
     crawler = get_crawler(**config)

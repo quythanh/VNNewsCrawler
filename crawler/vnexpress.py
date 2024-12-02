@@ -8,7 +8,7 @@ from models import Article
 
 from .base_crawler import BaseCrawler
 from logger import log
-from utils.bs4_utils import get_text_from_tag
+from utils import get_text_from_tag
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[1]  # root directory
@@ -61,19 +61,16 @@ class VNExpressCrawler(BaseCrawler):
         figure_tag = soup.find("figure", class_="tplCaption")
 
         if figure_tag is None:
-            print("fig is None")
             return Article(title, description, paragraphs, url, None)
 
         picture_tag = figure_tag.find("picture")
 
         if picture_tag is None:
-            print("pic is None")
             return Article(title, description, paragraphs, url, None)
 
         img_tag = picture_tag.find("img")
 
         if img_tag is None:
-            print("img is None")
             return Article(title, description, paragraphs, url, None)
 
         img = img_tag["data-src"]
